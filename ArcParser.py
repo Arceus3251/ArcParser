@@ -74,16 +74,17 @@ async def on_message(message: discord.Message):
     if message.content.startswith("ArcPing"):
         await message.channel.send("Hello world!")
     ### dice roll
-    elif message.content.startswith("$"):
-        expression = message.content.removeprefix("$")
+    elif message.content.startswith("!"):
+        expression = message.content.removeprefix("!")
         result = dice_parse(expression)
         total = 0
         for a in result:
             total += sum(a)
         message_out = f"{total}\n{expression}: {result}"
         await message.channel.send(message_out)
-    elif message.content.startswith("!"):
-        expression = message.content.removeprefix("!")
+    ### dice parsing
+    elif message.content.startswith("$"):
+        expression = message.content.removeprefix("$")
         ast = parse(GRAMMAR, expression)
         print(json.dumps(asjson(ast), indent=2))
 
