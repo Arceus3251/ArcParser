@@ -1,8 +1,10 @@
 # ArcPy
-
-import random
-import discord
 import json
+import random
+
+import discord
+
+import tatsu.exceptions
 from tatsu import parse
 from tatsu.util import asjson
 
@@ -85,7 +87,12 @@ async def on_message(message: discord.Message):
     ### dice parsing
     elif message.content.startswith("$"):
         expression = message.content.removeprefix("$")
-        ast = parse(GRAMMAR, expression)
-        print(json.dumps(asjson(ast), indent=2))
+        try:
+            ast = parse(GRAMMAR, expression)
+        except tatsu.exceptions.ParseException as e:
+            await message.channel.send(f"```ParseException: {e}```")
+            return
+        j = json.dumps(asjson(ast), indent=2)
+        await message.channel.send(f"```json\n{j}\n```")
 
 client.run(TOKEN)
