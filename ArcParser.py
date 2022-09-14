@@ -8,13 +8,7 @@ from tatsu.util import asjson
 
 GRAMMAR = """
 @@grammar::CALC
-start = dice $ ;
-
-dice
-    =
-    | dice /[d]+/ expression
-    | expression
-    ;
+start = expression $ ;
 
 expression
     =
@@ -25,14 +19,20 @@ expression
     
 term
     =
-    | term '*' factor
-    | term '/' factor
+    | term '*' dice
+    | term '/' dice
+    | dice
+    ;
+
+dice
+    =
+    | dice /[d]+/ factor
     | factor
     ;
     
 factor
     =
-    | '(' dice ')'
+    | '(' expression ')'
     | number
     ;
     
