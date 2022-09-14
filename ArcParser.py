@@ -13,7 +13,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 def dice_parse(expression: str) -> list[list[int]]:
-    express_list = expression.split("")
+    express_list = expression.split() 
     export_list: list[list[int]] = []
     for e in express_list:
         s = []
@@ -45,7 +45,7 @@ async def on_message(message):
         total = 0
         for a in result:
             total += sum(a)
-        message_out = f"{total}\n{expression}:{result}"
+        message_out = f"{total}\n{expression}: {result}"
         await message.channel.send(message_out)
     ### random
     elif message.content.startswith("ArcRand"):
