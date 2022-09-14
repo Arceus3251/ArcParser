@@ -6,13 +6,15 @@ import json
 from tatsu import parse
 from tatsu.util import asjson
 
-DICEGRAMMAR = """
-@@grammar::DICE
-start = expression $ ;"""
-
 GRAMMAR = """
 @@grammar::CALC
-start = expression $ ;
+start = dice $ ;
+
+dice
+    =
+    | dice /[d]+/ expression
+    | expression
+    ;
 
 expression
     =
@@ -23,24 +25,18 @@ expression
     
 term
     =
-    | term '*' dice
-    | term '/' dice
-    | dice
-    ;
-    
-dice
-    =
-    | dice 'd' factor
+    | term '*' factor
+    | term '/' factor
     | factor
     ;
     
 factor
     =
-    | '(' expression ')'
+    | '(' dice ')'
     | number
     ;
     
-number = /\d+/ ;
+number = /\d+/;
 """
 
 with open('AUTHTOKEN.txt', 'r') as f:
