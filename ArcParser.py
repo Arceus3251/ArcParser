@@ -1,9 +1,47 @@
 # ArcPy
 
 import random
-from re import S
-
 import discord
+import json
+from tatsu import parse
+from tatsu.util import asjson
+
+DICEGRAMMAR = """
+@@grammar::DICE
+start = expression $ ;"""
+
+GRAMMAR = """
+@@grammar::CALC
+start = expression $ ;
+
+expression
+    =
+    | expression '+' term
+    | expression '-' term
+    | term
+    ;
+    
+term
+    =
+    | term '*' dice
+    | term '/' dice
+    | dice
+    ;
+    
+dice
+    =
+    | dice 'd' factor
+    | factor
+    ;
+    
+factor
+    =
+    | '(' expression ')'
+    | number
+    ;
+    
+number = /\d+/ ;
+"""
 
 with open('AUTHTOKEN.txt', 'r') as f:
     TOKEN = f.read().strip()
@@ -11,6 +49,7 @@ with open('AUTHTOKEN.txt', 'r') as f:
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+
 
 def dice_parse(expression: str) -> list[list[int]]:
     express_list = expression.split()
@@ -47,5 +86,9 @@ async def on_message(message: discord.Message):
             total += sum(a)
         message_out = f"{total}\n{expression}: {result}"
         await message.channel.send(message_out)
+    elif message.content.startswith("!"):
+        expression = message.content.removeprefix("!")
+        ast = parse(GRAMMAR, expression)
+        print(json.dumps(asjson(ast), indent=2))
 
 client.run(TOKEN)
