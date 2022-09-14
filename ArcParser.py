@@ -1,7 +1,9 @@
 # ArcPy
 
-import discord
 import random
+from re import S
+
+import discord
 
 with open('AUTHTOKEN.txt', 'r') as f:
     TOKEN = f.read().strip()
@@ -10,9 +12,17 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-def dice_parse(expression):
-    express_list = expression.split("d")
-    export_list: list[int] = []
+def dice_parse(expression: str) -> list[list[int]]:
+    express_list = expression.split("")
+    export_list: list[list[int]] = []
+    for e in express_list:
+        s = []
+        x, y = e.split("d", 1)
+        x = int(x)
+        y = int(y)
+        for _ in range(x):
+            s.append(random.randint(1, y))
+        export_list.append(s)
     return export_list
     
 
@@ -25,16 +35,19 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+    ### ping
     if message.content.startswith("ArcPing"):
         await message.channel.send("Hello world!")
+    ### dice roll
     elif message.content.startswith("$"):
         expression = message.content.replace("$", "")
         result = dice_parse(expression)
-        sum = 0
+        total = 0
         for a in result:
-            sum += a
-        message_out = f"{sum}\n{expression}:{result}"
+            total += sum(a)
+        message_out = f"{total}\n{expression}:{result}"
         await message.channel.send(message_out)
+    ### random
     elif message.content.startswith("ArcRand"):
         expression = message.content.replace("ArcRand", "")
         await message.channel.send(random.randrange(int(expression)))
