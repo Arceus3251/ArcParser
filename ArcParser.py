@@ -32,7 +32,7 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == client.user:
         return
     ### ping
@@ -40,7 +40,7 @@ async def on_message(message):
         await message.channel.send("Hello world!")
     ### dice roll
     elif message.content.startswith("$"):
-        expression = message.content.replace("$", "")
+        expression = message.content.removeprefix("$")
         result = dice_parse(expression)
         total = 0
         for a in result:
