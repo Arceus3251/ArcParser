@@ -41,7 +41,7 @@ factor
 number = /\d+/;
 """
 
-def operate(var2: str, operator: str, var1: str):
+def operate(var2: str, operator: str, var1: str, dList):
     if operator == "+":
         return float(var1)+float(var2)
     elif operator == "-":
@@ -50,8 +50,10 @@ def operate(var2: str, operator: str, var1: str):
         return float(var1)*float(var2)
     elif operator == "/":
         return float(var1)/float(var2)
+    elif operator == "d":
+        return dice_parse(int(var1), int(var2), dList)
 
-def calculate(expression):
+def calculate(expression, dList):
     expression = expression.replace('["(",', "")
     expression = expression.replace(',")"]', "")
     expression = expression.replace('"', "")
@@ -62,7 +64,7 @@ def calculate(expression):
         data.append(e)
         if e == "]":
             data.pop()
-            new_data = operate(data.pop(), data.pop(), data.pop())
+            new_data = operate(data.pop(), data.pop(), data.pop(), dList)
             data.pop()
             data.append(str(new_data))
     return data[0]
@@ -75,18 +77,15 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-def dice_parse(expression: str) -> list[list[int]]:
-    express_list = expression.split()
-    export_list: list[list[int]] = []
-    for e in express_list:
-        s = []
-        x, y = e.split("d", 1)
-        x = int(x)
-        y = int(y)
-        for _ in range(x):
-            s.append(random.randint(1, y))
-        export_list.append(s)
-    return export_list
+def dice_parse(x:int, y:int, dList: list[list[int]]) -> int:
+    s = []
+    sum = 0
+    for _ in range(x):
+        currVal = random.randint(1, y)
+        s.append(currVal)
+        sum += currVal
+    dList.append(s)
+    return sum
     
 
 @client.event
@@ -121,7 +120,8 @@ async def on_message(message: discord.Message):
         j = json.dumps(asjson(ast), indent=2)
         j = j.replace("\n", "")
         j = j.replace(" ", "")
+        dList: list[list[int]] = []
         await message.channel.send(f"```json\n{j}\n```")
-        await message.channel.send(calculate(j))
+        await message.channel.send(f'{calculate(j, dList)}\n{dList}')
 
 client.run(TOKEN)
