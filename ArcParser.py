@@ -41,6 +41,32 @@ factor
 number = /\d+/;
 """
 
+def operate(var2: str, operator: str, var1: str):
+    if operator == "+":
+        return float(var1)+float(var2)
+    elif operator == "-":
+        return float(var1)-float(var2)
+    elif operator == "*":
+        return float(var1)*float(var2)
+    elif operator == "/":
+        return float(var1)/float(var2)
+
+def calculate(expression):
+    expression = expression.replace('["(",', "")
+    expression = expression.replace(',")"]', "")
+    expression = expression.replace('"', "")
+    expression = expression.replace(",", "")
+
+    data = []
+    for e in expression:
+        data.append(e)
+        if e == "]":
+            data.pop()
+            new_data = operate(data.pop(), data.pop(), data.pop())
+            data.pop()
+            data.append(str(new_data))
+    return data[0]
+
 with open('AUTHTOKEN.txt', 'r') as f:
     TOKEN = f.read().strip()
 
@@ -93,6 +119,9 @@ async def on_message(message: discord.Message):
             await message.channel.send(f"```ParseException: {e}```")
             return
         j = json.dumps(asjson(ast), indent=2)
+        j = j.replace("\n", "")
+        j = j.replace(" ", "")
         await message.channel.send(f"```json\n{j}\n```")
+        await message.channel.send(calculate(j))
 
 client.run(TOKEN)
