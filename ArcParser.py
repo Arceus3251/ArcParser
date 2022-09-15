@@ -60,13 +60,31 @@ def calculate(expression, dList):
     expression = expression.replace(",", "")
 
     data = []
+    digitStack = []
+    print(expression)
     for e in expression:
-        data.append(e)
-        if e == "]":
-            data.pop()
+        print(data)
+        if e.isdigit():
+            digitStack.append(e)
+        elif e == "]":
+            if len(digitStack)>0:
+                num: str = ""
+                for f in digitStack:
+                    num = num + f
+                data.append(num)
+                digitStack = []
+            
             new_data = operate(data.pop(), data.pop(), data.pop(), dList)
             data.pop()
             data.append(str(new_data))
+        else:
+            if len(digitStack)>0:
+                num: str = ""
+                for f in digitStack:
+                    num = num + f
+                data.append(num)
+                digitStack = []
+            data.append(e)
     return data[0]
 
 with open('AUTHTOKEN.txt', 'r') as f:
