@@ -61,9 +61,7 @@ def calculate(expression, dList):
 
     data = []
     digitStack = []
-    print(expression)
     for e in expression:
-        print(data)
         if e.isdigit():
             digitStack.append(e)
         elif e == "]":
@@ -140,6 +138,6 @@ async def on_message(message: discord.Message):
         j = j.replace(" ", "")
         dList: list[list[int]] = []
         await message.channel.send(f"```json\n{j}\n```")
-        await message.channel.send(f'{calculate(j, dList)}\n{dList}')
+        await message.channel.send(f'```# {calculate(j, dList)}\nDetails:({expression}) {dList}```')
 
 client.run(TOKEN)
