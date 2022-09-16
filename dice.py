@@ -51,9 +51,9 @@ def operate(left: int, op: str, right: int, dList: list[list[int]]) -> int:
 
 def calculate(input: dict, dList: list[list[int]]) -> int:
     if type(input.get('left')) == dict:
-        input.update('left', calculate(input.get('right')))
+        input.update({'left':calculate(input.get('left'), dList)})
     if type(input.get('right')) == dict:
-        input.update('right', calculate(input.get('right')))
+        input.update({'right':calculate(input.get('right'), dList)})
     return operate(input.get('left'), input.get('op'), input.get('right'), dList)
 
 def dice_parse(x:int, y:int, dList: list[list[int]]) -> int:
