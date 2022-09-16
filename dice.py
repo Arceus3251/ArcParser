@@ -6,15 +6,13 @@ start = expression $ ;
 
 expression
     =
-    | left:expression op:'+' ~ right:term
-    | left:expression op:'-' ~ right:term
+    | left:expression op:('+'|'-') ~ right:term
     | term
     ;
     
 term
     =
-    | left:term op:'*' ~ right:dice
-    | left:term op:'/' ~ right:dice
+    | left:term op:('*'|'/') ~ right:dice
     | dice
     ;
 
