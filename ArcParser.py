@@ -41,6 +41,12 @@ factor
 number = /\d+/;
 """
 
+class Settings:
+    def __init__(self) -> None:
+        with open("settings.json") as f:
+            j = json.load(f)
+        self.prefix = j["prefix"]
+
 class DiceSemantics:
     def number(self, ast):
         return int(ast)
@@ -92,14 +98,6 @@ def calculate(expression, dList):
             data.append(e)
     return data[0]
 
-with open('AUTHTOKEN.txt', 'r') as f:
-    TOKEN = f.read().strip()
-
-intents = discord.Intents.default()
-intents.message_content = True
-client = discord.Client(intents=intents)
-
-
 def dice_parse(x:int, y:int, dList: list[list[int]]) -> int:
     s = []
     sum = 0
@@ -110,34 +108,46 @@ def dice_parse(x:int, y:int, dList: list[list[int]]) -> int:
     dList.append(s)
     return sum
     
+def main():
+    with open('AUTHTOKEN.txt', 'r') as f:
+        TOKEN = f.read().strip()
 
-@client.event
-async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    settings = Settings()
+
+    intents = discord.Intents.default()
+    intents.message_content = True
+    client = discord.Client(intents=intents)
+
+    @client.event
+    async def on_ready():
+        print(f'{client.user} has connected to Discord!')
 
 
-@client.event
-async def on_message(message: discord.Message):
-    if message.author == client.user:
-        return
-    ### ping
-    if message.content.startswith("ArcPing"):
-        await message.channel.send("Hello world!")
-    ### dice parsing
-    elif message.content.startswith("&"):
-        expression = message.content.removeprefix("&")
-        if expression.isdigit(): 
-            await message.channel.send(f"```\n{int(expression)}\n```")
-        else:
-            try:
-                ast = parse(GRAMMAR, expression, semantics = DiceSemantics())
-            except tatsu.exceptions.ParseException as e:
-                await message.channel.send(f"```ParseException: {e}```")
-                return
-            j = json.dumps(asjson(ast))
-            await message.channel.send(ast)
-            dList: list[list[int]] = []
-            await message.channel.send(f"```json\n{j}\n```")
-            await message.channel.send(f'```# {calculate(j, dList)}\nDetails:({expression}) {dList}```')
+    @client.event
+    async def on_message(message: discord.Message):
+        if message.author == client.user:
+            return
+        ### ping
+        if message.content.startswith("ArcPing"):
+            await message.channel.send("Hello world!")
+        ### dice parsing
+        elif message.content.startswith(settings.prefix):
+            expression = message.content.removeprefix(settings.prefix)
+            if expression.isdigit(): 
+                await message.channel.send(f"```\n{int(expression)}\n```")
+            else:
+                try:
+                    ast = parse(GRAMMAR, expression, semantics = DiceSemantics())
+                except tatsu.exceptions.ParseException as e:
+                    await message.channel.send(f"```ParseException: {e}```")
+                    return
+                j = json.dumps(asjson(ast))
+                await message.channel.send(ast)
+                dList: list[list[int]] = []
+                await message.channel.send(f"```json\n{j}\n```")
+                await message.channel.send(f'```# {calculate(j, dList)}\nDetails:({expression}) {dList}```')
 
-client.run(TOKEN)
+    client.run(TOKEN)
+
+if __name__ == "__main__":
+    main()
