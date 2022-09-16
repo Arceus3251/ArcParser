@@ -12,7 +12,13 @@ expression
     
 term
     =
-    | left:term op:('*'|'/') ~ right:dice
+    | left:term op:('*'|'/') ~ right:exponent
+    | exponent
+    ;
+
+exponent
+    =
+    | left:dice op:'^' ~ right:exponent
     | dice
     ;
 
@@ -46,6 +52,8 @@ def operate(left: int, op: str, right: int, dice_list: list[list[int]]) -> int:
         return left / right
     elif op =="d":
         return dice_parse(left, right, dice_list)
+    elif op == "^":
+        return left**right
 
 def calculate(input: dict, dice_list: list[list[int]]) -> int:
     if type(input.get('left')) == dict:
