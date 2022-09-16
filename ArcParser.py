@@ -51,9 +51,9 @@ def main():
                     return
                 j = json.dumps(asjson(ast))
                 expression_input = json.loads(j)
-                dList: list[list[int]] = []
+                dice_list: list[list[int]] = []
                 await message.channel.send(f"```json\n{j}\n```")
-                await message.channel.send(f'```# {dice.calculate(expression_input, dList)}\nDetails:({expression}) {dList}```')
+                await message.channel.send(f'```# {dice.calculate(expression_input, dice_list)}\nDetails:({expression}) {dice_list}```')
 
     client.run(TOKEN)
 
