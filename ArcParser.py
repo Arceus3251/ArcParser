@@ -50,10 +50,10 @@ def main():
                     await message.channel.send(f"```ParseException: {e}```")
                     return
                 j = json.dumps(asjson(ast))
-                await message.channel.send(ast)
+                expression_input = json.loads(j)
                 dList: list[list[int]] = []
                 await message.channel.send(f"```json\n{j}\n```")
-                await message.channel.send(f'```# {dice.calculate(j, dList)}\nDetails:({expression}) {dList}```')
+                await message.channel.send(f'```# {dice.calculate(expression_input, dList)}\nDetails:({expression}) {dList}```')
 
     client.run(TOKEN)
 

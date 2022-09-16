@@ -37,52 +37,24 @@ class DiceSemantics:
     def number(self, ast):
         return int(ast)
 
-def operate(var2: str, operator: str, var1: str, dList):
-    outputVar = 0.0
-    if operator == "+":
-        outputVar = float(var1)+float(var2)
-    elif operator == "-":
-        outputVar = float(var1)-float(var2)
-    elif operator == "*":
-        outputVar = float(var1)*float(var2)
-    elif operator == "/":
-        outputVar = float(var1)/float(var2)
-    elif operator == "d":
-        return dice_parse(int(var1), int(var2), dList)
-    if outputVar.is_integer(): return int(outputVar)
-    return outputVar
+def operate(left: int, op: str, right: int, dList: list[list[int]]) -> int:
+    if op == "+":
+        return left + right
+    elif op == "-":
+        return left - right
+    elif op =="*":
+        return left * right
+    elif op =="/":
+        return left / right
+    elif op =="d":
+        return dice_parse(left, right, dList)
 
-def calculate(expression, dList):
-    expression = expression.replace('["(",', "")
-    expression = expression.replace(',")"]', "")
-    expression = expression.replace('"', "")
-    expression = expression.replace(",", "")
-
-    data = []
-    digitStack = []
-    for e in expression:
-        if e.isdigit():
-            digitStack.append(e)
-        elif e == "]":
-            if len(digitStack)>0:
-                num: str = ""
-                for f in digitStack:
-                    num = num + f
-                data.append(num)
-                digitStack = []
-            
-            new_data = operate(data.pop(), data.pop(), data.pop(), dList)
-            data.pop()
-            data.append(str(new_data))
-        else:
-            if len(digitStack)>0:
-                num: str = ""
-                for f in digitStack:
-                    num = num + f
-                data.append(num)
-                digitStack = []
-            data.append(e)
-    return data[0]
+def calculate(input: dict, dList: list[list[int]]) -> int:
+    if type(input.get('left')) == dict:
+        input.update('left', calculate(input.get('right')))
+    if type(input.get('right')) == dict:
+        input.update('right', calculate(input.get('right')))
+    return operate(input.get('left'), input.get('op'), input.get('right'), dList)
 
 def dice_parse(x:int, y:int, dList: list[list[int]]) -> int:
     s = []
