@@ -2,3 +2,5 @@
 AUTHTOKEN.txt
 settings.json
 .vscode/
+
+*.pyc
