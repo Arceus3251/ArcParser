@@ -41,6 +41,10 @@ factor
 number = /\d+/;
 """
 
+class DiceSemantics:
+    def number(self, ast):
+        return int(ast)
+
 def operate(var2: str, operator: str, var1: str, dList):
     outputVar = 0.0
     if operator == "+":
@@ -120,19 +124,18 @@ async def on_message(message: discord.Message):
     if message.content.startswith("ArcPing"):
         await message.channel.send("Hello world!")
     ### dice parsing
-    elif message.content.startswith("$"):
-        expression = message.content.removeprefix("$")
+    elif message.content.startswith("&"):
+        expression = message.content.removeprefix("&")
         if expression.isdigit(): 
             await message.channel.send(f"```\n{int(expression)}\n```")
         else:
             try:
-                ast = parse(GRAMMAR, expression)
+                ast = parse(GRAMMAR, expression, semantics = DiceSemantics())
             except tatsu.exceptions.ParseException as e:
                 await message.channel.send(f"```ParseException: {e}```")
                 return
-            j = json.dumps(asjson(ast), indent=2)
-            j = j.replace("\n", "")
-            j = j.replace(" ", "")
+            j = json.dumps(asjson(ast))
+            await message.channel.send(ast)
             dList: list[list[int]] = []
             await message.channel.send(f"```json\n{j}\n```")
             await message.channel.send(f'```# {calculate(j, dList)}\nDetails:({expression}) {dList}```')
