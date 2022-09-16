@@ -1,2 +1,7 @@
 .idea/
 AUTHTOKEN.txt
+.vscode/
+
+*.pyc
+settings.json
+settings.json
