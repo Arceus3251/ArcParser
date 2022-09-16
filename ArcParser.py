@@ -1,5 +1,4 @@
 # ArcPy
-from curses.ascii import isdigit
 import json
 import random
 
@@ -15,27 +14,27 @@ start = expression $ ;
 
 expression
     =
-    | expression '+' term
-    | expression '-' term
+    | left:expression op:'+' ~ right:term
+    | left:expression op:'-' ~ right:term
     | term
     ;
     
 term
     =
-    | term '*' dice
-    | term '/' dice
+    | left:term op:'*' ~ right:dice
+    | left:term op:'/' ~ right:dice
     | dice
     ;
 
 dice
     =
-    | dice /[d]+/ factor
+    | left:dice op:/[d]+/ ~ right:factor
     | factor
     ;
     
 factor
     =
-    | '(' expression ')'
+    | '(' ~ @:expression ')'
     | number
     ;
     
