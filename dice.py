@@ -26,7 +26,13 @@ exponent
 
 dice
     =
-    | left:dice op:/[d]+/ ~ right:factor
+    | left:dice op:/[d]+/ ~ right:uniary
+    | uniary
+    ;
+
+uniary
+    =
+    | op:'-' '(' mid:expression ')'
     | factor
     ;
     
@@ -58,10 +64,15 @@ def operate(left: int, op: str, right: int, dice_list: list[list[int]]) -> int:
         return left**right
 
 def calculate(input: dict, dice_list: list[list[int]]) -> int:
-    if input.get('op') == 'sqrt':
-        if type(input.get('mid')) == dict:
-            input.update({'mid':calculate(input.get('mid'), dice_list)})
-        return sqrt(input.get('mid'))
+    if 'right' not in input:
+        if input.get('op') == 'sqrt':
+            if type(input.get('mid')) == dict:
+                input.update({'mid':calculate(input.get('mid'), dice_list)})
+            return sqrt(input.get('mid'))
+        if input.get('op') == '-':
+            if type(input.get('mid')) == dict:
+                input.update({'mid':calculate(input.get('mid'), dice_list)})
+            return -1*(input.get('mid'))
         
     if type(input.get('left')) == dict:
         input.update({'left':calculate(input.get('left'), dice_list)})
